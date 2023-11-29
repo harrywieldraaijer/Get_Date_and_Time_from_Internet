@@ -15,8 +15,8 @@
    Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
    Get date, time etc. from the internet
 
-   Date last modified: 01-Januari-2021  - Version 1 
-   Date last modified: 28-November-2023 - Initial and original release
+   Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
+   Date last modified: 28-November-2023 - Version  1.0 Initial and original release
   
 
 */
@@ -51,7 +51,7 @@
 // ------------------ Begin of project section ------------------
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
-#include <Arduino_JSON.h>
+#include <ArduinoJSON.h>
 
 // ------------------ End of project section ------------------
 
@@ -70,7 +70,7 @@
 boolean ConnectToWifiNetwork();
 // ------------------ Begin of project section ------------------
 
-void objRec(JSONVar myObject);
+// void objRec(doc myObject);
 
 String GetParameterFromURL(String myURL,String myParameter) ;
 
@@ -126,6 +126,9 @@ void loop() {
 String GetParameterFromURL(String myURL,String myParameter){
   WiFiClient client;
   HTTPClient http;
+ // Prepare JSONdocument
+ const int capacity  = JSON_OBJECT_SIZE(15);
+ StaticJsonDocument<capacity> doc;
 
   Serial.print("[HTTP] begin...\n");
     if (http.begin(client, myURL)) {  // HTTP
@@ -142,26 +145,32 @@ String GetParameterFromURL(String myURL,String myParameter){
 
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-          JSONVar payload = http.getString();
+          doc = http.getString();
           DebugOutputPort.println("We are here");
-          DebugOutputPort.println(payload);
+          // DebugOutputPort.println(doc);
           DebugOutputPort.println("We were here");
-          objRec(payload);
+          // objRec(doc);
         }
       } else {
         DebugOutputPort.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
       }
       // DebugOutputPort.println(payload);
       http.end();
-      DebugOutputPort.println("Do we come here");
+      
       
     } else {
       DebugOutputPort.println("[HTTP] Unable to connect");
     }
-
+DebugOutputPort.println("Do we come here");
+char* input;
+DeserializationError err =  deserializeJson(doc,input);
+if  (err) {
+  DebugOutputPort.print(F("deserializeJson() failed with code "));
+  DebugOutputPort.println(err.c_str());
+}
 return "";
 }
-
+/*
 void objRec(JSONVar myObject) {
   Serial.println(myObject);
    Serial.println("{");
@@ -179,6 +188,7 @@ void objRec(JSONVar myObject) {
   //}
   Serial.println("}");
 }
+*/
 
 // ------------------ Routine to connect to the WIFI network ------------------
 boolean ConnectToWifiNetwork() {
