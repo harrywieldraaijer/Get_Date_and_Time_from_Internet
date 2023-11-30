@@ -2,13 +2,13 @@
 
    Module: Get date, time etc. from the internet
 
-   Master Code: 20231127/2
+   Framwork Code date/version: 20231127/2
 
-   Project Location:
+   Project documentation location:
 
-   Created by: Harry Wieldraaijer
+   Developed and created by: Harry Wieldraaijer
 
-   Created on: 28-November-2023
+   This version has been cßreated on: 28-November-2023
    
    Short description:
 
@@ -45,8 +45,10 @@
 
 
 // ------------------ Include and describe libraries ------------------
+// ------------------ Framework ------------------
 #include <Arduino.h>
 #include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
+// ------------------ End framework ------------------
 
 // ------------------ Begin of project section ------------------
 #include <ESP8266HTTPClient.h>
