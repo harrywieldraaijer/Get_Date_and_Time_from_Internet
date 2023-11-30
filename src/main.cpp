@@ -138,7 +138,7 @@ String GetParameterFromURL(String myURL,String myParameter){
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String received = http.getString();
           // DebugOutputPort.println(received);
-          const int capacity  = 800; //JSON_OBJECT_SIZE(30);
+          const int capacity  = 512; //From JSON assistant
           StaticJsonDocument<capacity> doc;
           DeserializationError err =  deserializeJson(doc,received);
           if  (err) {
