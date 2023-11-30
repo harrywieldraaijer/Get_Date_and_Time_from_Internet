@@ -15,7 +15,7 @@
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
 
-   Date last modified: 30-November-2023 - Version  2.1 Cleean up and devided in sections
+   Date last modified: 30-November-2023 - Version  2.1 Clean up and devided in sections
    Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
    Date last modified: 28-November-2023 - Version  1.0 Initial and original release
   
@@ -104,9 +104,10 @@ void loop() {
 }
 */
   String myURL = "http://worldtimeapi.org/api/timezone/Europe/Amsterdam";
-  String myParameter = "";
+  String myParameter = "datetime";
   String Result;
   Result = GetParameterFromURL(myURL,myParameter);
+  DebugOutputPort.println(Result);
   delay(10000);
   
   
@@ -117,14 +118,14 @@ void loop() {
 String GetParameterFromURL(String myURL,String myParameter){
   WiFiClient client;
   HTTPClient http;
- // Prepare JSONdocument
- 
+  String ReturnValue;
 
-  Serial.print("[HTTP] begin...\n");
+
+  DebugOutputPort.print("[HTTP] begin...\n");
     if (http.begin(client, myURL)) {  // HTTP
 
 
-      DebugOutputPort.print("[HTTP] GET...\n");
+      DebugOutputPort.println("[HTTP] GET...\n");
       // start connection and send HTTP header
       int httpCode = http.GET();
 
@@ -136,7 +137,7 @@ String GetParameterFromURL(String myURL,String myParameter){
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String received = http.getString();
-          DebugOutputPort.println(received);
+          // DebugOutputPort.println(received);
           const int capacity  = 800; //JSON_OBJECT_SIZE(30);
           StaticJsonDocument<capacity> doc;
           DeserializationError err =  deserializeJson(doc,received);
@@ -144,21 +145,24 @@ String GetParameterFromURL(String myURL,String myParameter){
               DebugOutputPort.print(F("deserializeJson() failed with code "));
               DebugOutputPort.println(err.c_str());
           }
-          DebugOutputPort.println(doc["datetime"].as<const char*>());
-          // objRec(doc);
+          // DebugOutputPort.println(doc[myParameter].as<const char*>());
+          const char* tmpReturnValue =  doc[myParameter];
+          ReturnValue=tmpReturnValue;
+          // DebugOutputPort.println(ReturnValue);
         }
         } else {
           DebugOutputPort.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
         }
         DebugOutputPort.println("Close  HTTP here");
+        
         http.end();
-      
+        
       
     } else {
       DebugOutputPort.println("[HTTP] Unable to connect");
     }
 
-return "";
+return ReturnValue;
 }
 
 // ------------------ Routine to connect to the WIFI network ------------------
