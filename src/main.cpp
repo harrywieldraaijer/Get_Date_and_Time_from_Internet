@@ -15,6 +15,7 @@
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
 
+   Date last modified: 30-November-2023 - Version  2.1 Cleean up and devided in sections
    Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
    Date last modified: 28-November-2023 - Version  1.0 Initial and original release
   
@@ -23,7 +24,67 @@
 
 
 /* ------------------ Hardware notes ------------------
- # curl "http://worldtimeapi.org/api/timezone/Europe/Amsterdam"
+ 
+*/
+
+
+// ------------------ Include and describe libraries ------------------
+// ------------------ Section connect to WiFi ------------------
+#include <Arduino.h>
+#include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
+/// ------------------ End of section connect to WiFi ------------------
+// ------------------ Section connect get parameter from http: ------------------
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
+#include <ArduinoJSON.h>
+// ------------------ Section connect get parameter from http:  ------------------
+// ------------------ Declare section framework ------------------
+#define DebugOutputPort Serial
+// ------------------ End declare section framework ------------------
+// ------------------ Function description framework ------------------
+boolean ConnectToWifiNetwork();
+String GetParameterFromURL(String myURL,String myParameter) ;
+// ------------------ End function description framework ------------------
+// ------------------ Begin of project section ------------------
+
+
+
+
+// ------------------ End of project section ------------------
+
+// ------------------ Initialization section ------------------
+
+void setup() {
+// ------------------ Setup section for framework------------------ 
+DebugOutputPort.begin(115200); // For debugging
+#ifndef ESP8266
+  while (!Serial); // wait for serial port to connect. Needed for native USB
+#endif
+DebugOutputPort.setDebugOutput(true);
+//ESP.wdtDisable(); // Used to debug, disable wachdog timer.
+// Iets van flush doen......
+DebugOutputPort.print("\n");
+// ------------------ Connect to WIFI network ------------------
+// Get or set the credentials of the WIFI network
+WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
+//WiFi.mode(WIFI_STA); // it is a good practice to make sure your code sets wifi mode how you want it.
+if (!ConnectToWifiNetwork()) {
+  DebugOutputPort.println("");
+  DebugOutputPort.println("Could not connect to WIFI network!");
+  DebugOutputPort.println("");
+  delay(5000);
+  ESP.reset(); // Reset and try again
+  }
+// ------------------ Setup section for framework------------------
+// ------------------ Setup section for project ------------------
+
+// ------------------ Setup section for project ------------------
+}
+
+void loop() {
+// put your main code here, to run repeatedly:
+/* Get datetime from thee Internet
+# curl "http://worldtimeapi.org/api/timezone/Europe/Amsterdam"
 {
   "abbreviation": "CET",
   "client_ip": "62.45.99.171",
@@ -42,78 +103,6 @@
   "week_number": 48
 }
 */
-
-
-// ------------------ Include and describe libraries ------------------
-// ------------------ Framework ------------------
-#include <Arduino.h>
-#include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
-// ------------------ End framework ------------------
-
-// ------------------ Begin of project section ------------------
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
-#include <ArduinoJSON.h>
-
-// ------------------ End of project section ------------------
-
-
-// ------------------ Declare section ------------------
-#define DebugOutputPort Serial
-
-
-
-
-// ------------------ Function description ------------------
-
-
-// put function declarations here:
-
-boolean ConnectToWifiNetwork();
-// ------------------ Begin of project section ------------------
-
-// void objRec(doc myObject);
-
-String GetParameterFromURL(String myURL,String myParameter) ;
-
-// ------------------ End of project section ------------------
-
-// ------------------ Initialization section ------------------
-
-void setup() {
-  
-
-  DebugOutputPort.begin(115200); // For debugging
-#ifndef ESP8266
-  while (!Serial); // wait for serial port to connect. Needed for native USB
-#endif
-  DebugOutputPort.setDebugOutput(true);
-  //ESP.wdtDisable(); // Used to debug, disable wachdog timer.
-  // Iets van flush doen......
-  DebugOutputPort.print("\n");
-
-  
-  // ------------------ Connect to WIFI network ------------------
-  // Get or set the credentials of the WIFI network
-  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
-  
-    //WiFi.mode(WIFI_STA); // it is a good practice to make sure your code sets wifi mode how you want it.
-    if (!ConnectToWifiNetwork()) {
-    DebugOutputPort.println("");
-    DebugOutputPort.println("Could not connect to WIFI network!");
-    DebugOutputPort.println("");
-    delay(5000);
-    ESP.reset(); // Reset and try again
-    }
-
-  // ------------------ Begin of project section ------------------
-
-  // ------------------ End of project section ------------------
-
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
   String myURL = "http://worldtimeapi.org/api/timezone/Europe/Amsterdam";
   String myParameter = "";
   String Result;
@@ -171,25 +160,6 @@ String GetParameterFromURL(String myURL,String myParameter){
 
 return "";
 }
-/*
-void objRec(JSONVar myObject) {
-  Serial.println(myObject);
-   Serial.println("{");
-  for (int x = 0; x < myObject.keys().length(); x++) {
-    // if ((JSON.typeof(myObject[myObject.keys()[x]])).equals("object")) {
-      Serial.print(myObject.keys()[x]);
-      Serial.println(" : ");
-      objRec(myObject[myObject.keys()[x]]);
-    //}
-    // else {
-      Serial.print(myObject.keys()[x]);
-      Serial.print(" : ");
-      Serial.println(myObject[myObject.keys()[x]]);
-    }
-  //}
-  Serial.println("}");
-}
-*/
 
 // ------------------ Routine to connect to the WIFI network ------------------
 boolean ConnectToWifiNetwork() {
