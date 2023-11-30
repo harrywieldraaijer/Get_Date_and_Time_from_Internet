@@ -8,12 +8,12 @@
 
    Developed and created by: Harry Wieldraaijer
 
-   This version has been cßreated on: 28-November-2023
+   This project version has been created on: 28-November-2023
    
    Short description:
 
-   Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
-   Get date, time etc. from the internet
+      Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
+      Get date, time etc. from the internet
 
    Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
    Date last modified: 28-November-2023 - Version  1.0 Initial and original release
@@ -129,8 +129,7 @@ String GetParameterFromURL(String myURL,String myParameter){
   WiFiClient client;
   HTTPClient http;
  // Prepare JSONdocument
- const int capacity  = JSON_OBJECT_SIZE(15);
- StaticJsonDocument<capacity> doc;
+ 
 
   Serial.print("[HTTP] begin...\n");
     if (http.begin(client, myURL)) {  // HTTP
@@ -143,33 +142,33 @@ String GetParameterFromURL(String myURL,String myParameter){
       // httpCode will be negative on error
       if (httpCode > 0) {
         // HTTP header has been send and Server response header has been handled
-        // DebugOutputPort.printf("[HTTP] GET... code: %d\n", httpCode);
+        DebugOutputPort.printf("[HTTP] GET... code: %d\n", httpCode);
 
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-          doc = http.getString();
-          DebugOutputPort.println("We are here");
-          // DebugOutputPort.println(doc);
-          DebugOutputPort.println("We were here");
+          String received = http.getString();
+          DebugOutputPort.println(received);
+          const int capacity  = 800; //JSON_OBJECT_SIZE(30);
+          StaticJsonDocument<capacity> doc;
+          DeserializationError err =  deserializeJson(doc,received);
+          if  (err) {
+              DebugOutputPort.print(F("deserializeJson() failed with code "));
+              DebugOutputPort.println(err.c_str());
+          }
+          DebugOutputPort.println(doc["datetime"].as<const char*>());
           // objRec(doc);
         }
-      } else {
-        DebugOutputPort.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-      }
-      // DebugOutputPort.println(payload);
-      http.end();
+        } else {
+          DebugOutputPort.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        }
+        DebugOutputPort.println("Close  HTTP here");
+        http.end();
       
       
     } else {
       DebugOutputPort.println("[HTTP] Unable to connect");
     }
-DebugOutputPort.println("Do we come here");
-char* input;
-DeserializationError err =  deserializeJson(doc,input);
-if  (err) {
-  DebugOutputPort.print(F("deserializeJson() failed with code "));
-  DebugOutputPort.println(err.c_str());
-}
+
 return "";
 }
 /*
