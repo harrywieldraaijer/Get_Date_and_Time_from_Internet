@@ -4,20 +4,19 @@
 
    Framwork Code date/version: 20231127/2
 
-   Project documentation location:
+   Project documentation location: PlatformIO/Projects/Get_Date_and_Time_from_Internet
 
    Developed and created by: Harry Wieldraaijer
-
-   This project version has been created on: 2-December-2023
    
    Short description:
 
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
 
-   Date last modified: 02-December-2023 - Version  2.13 Back  to version 2.11
+   Date last modified: 02-December-2023 - Version  2.14 Add OTA funtionality and minor changes
+   Date last modified: 02-December-2023 - Version  2.13 Back to version 2.11
    Date last modified: 02-December-2023 - Version  2.12 Try to remove strings
-   Date last modified: 01-December-2023 - Version  2.11 Minor  changes
+   Date last modified: 01-December-2023 - Version  2.11 Minor changes
    Date last modified: 30-November-2023 - Version  2.1  Clean up and devided in sections
    Date last modified: 29-November-2023 - Version  2.0  Moved from Arduino_JSON.h to ArduinoJSON.h 
    Date last modified: 28-November-2023 - Version  1.0  Initial and original release
@@ -40,7 +39,10 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <ArduinoJSON.h>
-// ------------------ Section connect get parameter from http:  ------------------
+// ------------------ End of section connect get parameter from http:  ------------------
+// ------------------ Section to enable OTA  ------------------
+#include <ArduinoOTA.h>
+// ------------------ End of section to enable OTA  ------------------
 // ------------------ Declare section framework ------------------
 #define DebugOutputPort Serial
 // ------------------ End declare section framework ------------------
@@ -78,15 +80,19 @@ if (!ConnectToWifiNetwork()) {
   delay(5000);
   ESP.reset(); // Reset and try again
   }
-// ------------------ Setup section for framework------------------
+// ------------------ Startup OTA ------------------
+ArduinoOTA.begin();
 // ------------------ Setup section for project ------------------
 
-// ------------------ Setup section for project ------------------
+// ------------------ End setup section for project ------------------
 }
 
 void loop() {
 // put your main code here, to run repeatedly:
-/* Get datetime from thee Internet
+// ------------------ Startup OTA ------------------
+ArduinoOTA.handle();
+
+/* Get datetime from the Internet
 # curl "http://worldtimeapi.org/api/timezone/Europe/Amsterdam"
 {
   "abbreviation": "CET",
@@ -127,9 +133,8 @@ String GetParameterFromURL(String myURL,String myParameter){
   DebugOutputPort.print("[HTTP] begin...\n");
     if (http.begin(client, myURL)) {  // HTTP
 
-
-      DebugOutputPort.println("[HTTP] GET...\n");
       // start connection and send HTTP header
+      DebugOutputPort.println("[HTTP] GET...\n");
       int httpCode = http.GET();
 
       // httpCode will be negative on error
