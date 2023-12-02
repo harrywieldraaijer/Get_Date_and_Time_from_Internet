@@ -8,16 +8,19 @@
 
    Developed and created by: Harry Wieldraaijer
 
-   This project version has been created on: 28-November-2023
+   This project version has been created on: 2-December-2023
    
    Short description:
 
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
 
-   Date last modified: 30-November-2023 - Version  2.1 Clean up and devided in sections
-   Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
-   Date last modified: 28-November-2023 - Version  1.0 Initial and original release
+   Date last modified: 02-December-2023 - Version  2.13 Back  to version 2.11
+   Date last modified: 02-December-2023 - Version  2.12 Try to remove strings
+   Date last modified: 01-December-2023 - Version  2.11 Minor  changes
+   Date last modified: 30-November-2023 - Version  2.1  Clean up and devided in sections
+   Date last modified: 29-November-2023 - Version  2.0  Moved from Arduino_JSON.h to ArduinoJSON.h 
+   Date last modified: 28-November-2023 - Version  1.0  Initial and original release
   
 
 */
