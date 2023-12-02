@@ -15,6 +15,8 @@
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
 
+   Date last modified: 02-December-2023 - Version  2.12 Removed some strings
+   Date last modified: 01-December-2023 - Version  2.11 Clean up 
    Date last modified: 30-November-2023 - Version  2.1 Clean up and devided in sections
    Date last modified: 29-November-2023 - Version  2.0 Moved from Arduino_JSON.h to ArduinoJSON.h 
    Date last modified: 28-November-2023 - Version  1.0 Initial and original release
@@ -43,7 +45,7 @@
 // ------------------ End declare section framework ------------------
 // ------------------ Function description framework ------------------
 boolean ConnectToWifiNetwork();
-String GetParameterFromURL(String myURL,String myParameter) ;
+char GetParameterFromURL(char* myURL,char* myParameter) ;
 // ------------------ End function description framework ------------------
 // ------------------ Begin of project section ------------------
 
@@ -103,11 +105,14 @@ void loop() {
   "week_number": 48
 }
 */
-  String myURL = "http://worldtimeapi.org/api/timezone/Europe/Amsterdam";
-  String myParameter = "datetime";
-  String Result;
-  Result = GetParameterFromURL(myURL,myParameter);
-  DebugOutputPort.println(Result);
+  char* requesturl;
+  strcpy(requesturl,"http://worldtimeapi.org/api/timezone/Europe/Amsterdam");
+  char* myParameter;
+  strcpy(myParameter,"datetime");
+  DebugOutputPort.println(requesturl);
+  DebugOutputPort.println(myParameter);
+  //char Result = GetParameterFromURL(requesturl,myParameter);
+  //DebugOutputPort.println(Result);
   delay(10000);
   
   
@@ -115,15 +120,13 @@ void loop() {
 
 // put function definitions here:
 
-String GetParameterFromURL(String myURL,String myParameter){
+char GetParameterFromURL(char* url,char* myParameter){
   WiFiClient client;
   HTTPClient http;
-  String ReturnValue;
-
+  // char ReturnValue[24];
 
   DebugOutputPort.print("[HTTP] begin...\n");
-    if (http.begin(client, myURL)) {  // HTTP
-
+    if (http.begin(client, url*)) {  // HTTP
 
       DebugOutputPort.println("[HTTP] GET...\n");
       // start connection and send HTTP header
@@ -137,7 +140,8 @@ String GetParameterFromURL(String myURL,String myParameter){
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
           String received = http.getString();
-          // DebugOutputPort.println(received);
+          DebugOutputPort.println(received);
+          /*
           const int capacity  = 512; //From JSON assistant
           StaticJsonDocument<capacity> doc;
           DeserializationError err =  deserializeJson(doc,received);
@@ -146,9 +150,10 @@ String GetParameterFromURL(String myURL,String myParameter){
               DebugOutputPort.println(err.c_str());
           }
           // DebugOutputPort.println(doc[myParameter].as<const char*>());
-          const char* tmpReturnValue =  doc[myParameter];
-          ReturnValue=tmpReturnValue;
+          char ReturnValue =  doc[myParameter];
           // DebugOutputPort.println(ReturnValue);
+          //return ReturnValue;
+          */
         }
         } else {
           DebugOutputPort.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -162,7 +167,7 @@ String GetParameterFromURL(String myURL,String myParameter){
       DebugOutputPort.println("[HTTP] Unable to connect");
     }
 
-return ReturnValue;
+return {}; //ReturnValue;
 }
 
 // ------------------ Routine to connect to the WIFI network ------------------
