@@ -12,7 +12,7 @@
 
       Connect to WiFi with stored password, if no stored password enter it via an webbrowser.
       Get date, time etc. from the internet
-
+   Date last modified: 03-December-2023 - Version  2.2  Modified OTA to AsyncElegantOTA and added webserver
    Date last modified: 02-December-2023 - Version  2.14 Add OTA funtionality and minor changes
    Date last modified: 02-December-2023 - Version  2.13 Back to version 2.11
    Date last modified: 02-December-2023 - Version  2.12 Try to remove strings
@@ -40,6 +40,9 @@
 #include <WiFiClient.h>
 #include <ArduinoJSON.h>
 // ------------------ End of section connect get parameter from http:  ------------------
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
 // ------------------ Section to enable OTA  ------------------
 #include <ArduinoOTA.h>
 // ------------------ End of section to enable OTA  ------------------
@@ -81,7 +84,14 @@ if (!ConnectToWifiNetwork()) {
   ESP.reset(); // Reset and try again
   }
 // ------------------ Startup OTA ------------------
-ArduinoOTA.begin();
+server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Hi! I am ESP8266.");
+  });
+
+  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+  server.begin();
+  DebugOutputPort.println("HTTP server started");
+
 // ------------------ Setup section for project ------------------
 
 // ------------------ End setup section for project ------------------
